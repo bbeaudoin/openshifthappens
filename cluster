@@ -1,0 +1,53 @@
+#!/usr/bin/bash
+
+DEBUG=1
+REBOOT_SLEEP=3m
+OPENSHIFT_ANSIBLE="/usr/share/ansible/openshift-ansible"
+
+function runCommand {
+  if [ "$DEBUG" -eq 1 ]; then
+    echo "#### Command: $@"
+  fi
+  eval "$@"
+}
+
+function rebootall {
+  runCommand "ansible-playbook playbooks/reboot.yml"
+}
+
+function install {
+  runCommand "ansible-playbook playbooks/encryption.yml"
+  runCommand "ansible-playbook $OPENSHIFT_ANSIBLE/playbooks/deploy_cluster.yml"
+  runCommand "ansible-playbook playbooks/post-install.yml"
+}
+
+function uninstall {
+  runCommand "ansible-playbook $OPENSHIFT_ANSIBLE/playbooks/adhoc/uninstall.yml"
+  runCommand "ansible nodes -a 'docker image prune --force'"
+  runCommand "ansible nodes -a 'subscription-manager refresh'"
+}
+
+function iptables {
+  ansible all -m systemd -a 'name=firewalld state=stopped enabled=false masked=true'
+  ansible all -m systemd -a 'name=iptables state=started enabled=true masked=false'
+}
+
+case $1 in
+  install)
+    install
+    ;;
+  uninstall)
+    uninstall
+    rebootall
+    ;;
+  reinstall)
+    uninstall
+    rebootall
+    install
+    ;;
+  reboot)
+    rebootall
+    ;;
+  *)
+    echo "Usage: $0 <install|uninstall|reinstall>"
+esac

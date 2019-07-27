@@ -1,0 +1,2 @@
+NAME VERSION OS-IMAGE KERNEL-VERSION CONTAINER-RUNTIME CPU MEMORY MD5SUM
+metadata.name status.nodeInfo.kubeletVersion status.nodeInfo.osImage status.nodeInfo.kernelVersion status.nodeInfo.containerRuntimeVersion status.capacity.cpu status.capacity.memory metadata.annotations.node\.openshift\.io/md5sum

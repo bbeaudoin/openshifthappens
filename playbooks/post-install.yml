@@ -1,0 +1,16 @@
+---
+# Post-installation playbook
+- hosts: masters[0]
+  tasks:
+  - name: Copy the project request template
+    copy:
+      src: "{{ item }}"
+      dest: /root/
+    with_items:
+    - project-request.yml
+    - ceph/ceph-secret.yml
+    - ceph/ceph-user-secret.yml
+    - ceph/ceph-storageclass.yml
+
+  - name: Run a script to complete the configuration
+    script: post-install.sh

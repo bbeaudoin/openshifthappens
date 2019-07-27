@@ -1,0 +1,19 @@
+---
+- hosts: OSEv3
+  tasks:
+    - import_role:
+        name: /usr/share/ansible/openshift-ansible/roles/lib_utils
+
+    - name: Edit node-config.yaml proxy-mode
+      yedit:
+        src: /etc/origin/node/node-config.yaml
+        edits:
+        - key: proxyArguments.proxy-mode[0]
+          value: "{{ proxy_mode }}"
+      register: nodeconfig
+
+    - name: Restart the node service if changed
+      systemd:
+        name: atomic-openshift-node
+        state: restarted
+      when: nodeconfig.changed

@@ -1,0 +1,18 @@
+---
+- import_playbook: /usr/share/ansible/openshift-ansible/playbooks/init/main.yml
+
+- hosts: oo_first_master
+  tasks:
+    - name: Clean-up existing node configmaps
+      command: oc delete configmaps -n openshift-node
+
+- hosts: oo_first_master
+  roles:
+  - role: /usr/share/ansible/openshift-ansible/roles/openshift_node_group
+
+- hosts: OSEv3:nodes
+  tasks:
+    - name: Restart atomic-openshift-node
+      systemd:
+        name: atomic-openshift-node
+        state: restarted

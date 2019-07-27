@@ -1,0 +1,20 @@
+---
+- hosts: nodes
+  vars:
+    os_firewall_use_firewalld: false
+    os_firewall_allow:
+    - service: httpd
+      port: 80/tcp
+    - service: https
+      port: 443/tcp
+  tasks:
+  - include_role:
+      name: lib_os_firewall
+
+  - name: set allow rules
+    os_firewall_manage_iptables:
+      name: "{{ item.service }}"
+      action: add
+      protocol: "{{ item.port.split('/')[1] }}"
+      port: "{{ item.port.split('/')[0] }}"
+    with_items: "{{ os_firewall_allow }}"

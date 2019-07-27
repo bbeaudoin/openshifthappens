@@ -1,0 +1,15 @@
+- name: Install openvswitch
+  yum:
+    name: openvswitch
+    state: present
+- name: Update user and group
+  lineinfile:
+    dest: /etc/sysconfig/openvswitch
+    regexp: "^(#|)OVS_USER_ID="
+    line: OVS_USER_ID="root:root"
+    backup: yes
+- name: start and enable openvswitch
+  systemd:
+    name: openvswitch
+    state: started
+    enabled: yes

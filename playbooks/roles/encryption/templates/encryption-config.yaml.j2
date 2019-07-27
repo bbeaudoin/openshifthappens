@@ -1,0 +1,17 @@
+{% macro resources() -%}
+{% for resource in etcd_encrypt_resources | default(['secrets']) -%}
+- {{ resource }}
+{% endfor -%}
+{%- endmacro -%}
+
+kind: EncryptionConfig
+apiVersion: v1
+resources:
+  - resources:
+{{ resources() | indent(4, True) }}
+    providers:
+    - aescbc:
+        keys:
+        - name: {{ key_name }}
+          secret: {{ key_secret }}
+    - identity: {}

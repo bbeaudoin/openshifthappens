@@ -1,0 +1,8 @@
+---
+# Run the pre-requisite tasks for encryption
+- hosts: masters
+  tasks:
+  - import_tasks: install-tasks.yml
+
+# Run the playbook to deploy the cluster
+#- import_playbook: /usr/share/ansible/openshift-ansible/playbooks/byo/config.yml

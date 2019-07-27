@@ -1,0 +1,29 @@
+---
+- name: Generate the encryption-config
+  template:
+    src: encryption-config.yaml.j2
+    dest: /tmp/encryption-config.yaml
+  delegate_to: localhost
+  run_once: true
+    
+- name: Ensure /etc/origin/master/ directory is present
+  file:
+    path: /etc/origin/master/
+    state: directory
+    mode: 0700
+    force: no
+
+- name: Copy encryption-config.yaml to /etc/origin/master
+  copy:
+    src: /tmp/encryption-config.yaml
+    dest: /etc/origin/master/encryption-config.yaml
+    mode: 0600
+    backup: yes
+    force: no
+
+- name: Remove locally generated encryption-config
+  file:
+    path: /tmp/encryption-config.yaml
+    state: absent
+  delegate_to: localhost
+  run_once: true

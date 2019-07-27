@@ -1,0 +1,40 @@
+---
+- hosts: masters
+  roles:
+    - encryption
+
+- hosts: all
+  tasks:
+    - name: Ensure systems are subscribed
+      redhat_subscription:
+        username: "{{ rhsm_username }}"
+        password: "{{ rhsm_password }}"
+        pool: "{{ rhsm_pool_id }}"
+
+    - name: Disable all repositories
+      command: subscription-manager repos --disable="*"
+
+    - name: Enable repos required for OpenShift
+      command: subscription-manager repos --enable="rhel-7-server-rpms" --enable="rhel-7-server-extras-rpms" --enable="rhel-7-server-ose-3.7-rpms" --enable="rhel-7-fast-datapath-rpms" --enable="rhel-7-server-ansible-2.4-rpms"
+
+    - name: Install pre-requisite packages
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - wget
+        - git
+        - net-tools
+        - bind-utils
+        - yum-utils
+        - iptables-services
+        - bridge-utils
+        - bash-completion
+        - kexec-tools
+        - sos
+        - psacct
+        - yum-utils
+    #- name: Update all packages
+      #yum: 
+        #name: "*"
+        #state: latest

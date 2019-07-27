@@ -1,0 +1,5 @@
+---
+# Run the pre-requisite tasks for encryption
+- hosts: masters
+  roles:
+    - encryption

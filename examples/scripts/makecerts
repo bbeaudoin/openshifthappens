@@ -1,0 +1,47 @@
+#!/usr/bin/bash
+
+# Configuration
+CERT_PATH=~/certs
+PUBLIC_HOSTNAME=$1
+
+# Make a directory for certificates, if missing
+if [ ! -e "${CERT_PATH}" ]; then
+  mkdir -p ${CERT_PATH}/{server,client}
+fi
+
+# Create the CA and intermediate pair
+if [ ! -e ${CERT_PATH}/root.key ]; then
+  # Create the CA certificate
+  openssl req -new -newkey rsa:2048 -days 3652 -nodes -x509 \
+    -keyout ${CERT_PATH}/root.key \
+    -out ${CERT_PATH}/root.crt \
+    -subj '/C=US/ST=GA/L=Atlanta/O=VMware/OU=Lab/CN=Example CA'
+fi
+
+# Generate certificate request and put it in ${CERT_PATH}/
+openssl req -new -newkey rsa:2048 -days 365 -nodes \
+  -reqexts SAN -config <(cat /etc/pki/tls/openssl.cnf <(printf "[SAN]\nsubjectAltName=DNS:${PUBLIC_HOSTNAME}")) \
+  -keyout ${CERT_PATH}/server/site.key \
+  -out ${CERT_PATH}/server/site.csr \
+  -subj '/C=US/ST=GA/L=Atlanta/O=VMware/OU=Lab/CN='${PUBLIC_HOSTNAME}
+
+# Sign the certificate with the CA and put it in ${CERT_PATH}/
+openssl x509 -req -days 365 -CAcreateserial \
+  -CA ${CERT_PATH}/root.crt \
+  -CAkey ${CERT_PATH}/root.key \
+  -extfile source/scripts/v3.ext \
+  -in ${CERT_PATH}/server/site.csr \
+  -out ${CERT_PATH}/server/site.crt
+
+# Generate certificate request and put it in ${CERT_PATH}/
+openssl req -new -newkey rsa:2048 -days 365 -nodes \
+  -keyout ${CERT_PATH}/client/site.key \
+  -out ${CERT_PATH}/client/site.csr \
+  -subj '/C=US/ST=GA/L=Atlanta/O=VMware/OU=Lab/CN=myapp@example.com'
+
+# Sign the certificate with the CA and put it in ${CERT_PATH}/
+openssl x509 -req -days 365 -CAcreateserial \
+  -CA ${CERT_PATH}/root.crt \
+  -CAkey ${CERT_PATH}/root.key \
+  -in ${CERT_PATH}/client/site.csr \
+  -out ${CERT_PATH}/client/site.crt

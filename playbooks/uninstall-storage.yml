@@ -1,0 +1,16 @@
+---
+hosts: nodes
+tasks:
+
+# Clean up storage
+- name: Detach /dev/sdc from ceph
+  module: command
+  arguments: dmsetup remove -j 253 -m 3
+
+- name: Remove /dev/sdc from LVM
+  module: command
+  arguments: pvremove -f -f -y /dev/sdc
+
+- name: Remove docker images (force pull)
+  module: command
+  arguments: docker image prune --all --force

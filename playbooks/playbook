@@ -1,0 +1,5 @@
+---
+- hosts: app-37-1.openshifthappens.com
+  tasks:
+    - name: Include tasks from openvswitch.yml
+      include_tasks: openvswitch.yml

@@ -1,0 +1,26 @@
+---
+- hosts: OSEv3:nodes
+  tasks:
+    - name: Ensure proxy-mode exists
+      lineinfile:
+        path: /etc/origin/node/node-config.yaml
+        insertafter: "proxyArguments:"
+        line: "  proxy-mode:"
+
+    - name: Remove iptables mode
+      lineinfile:
+        path: /etc/origin/node/node-config.yaml
+        insertafter: "  proxy-mode:"
+        line: "    - iptables"
+        state: absent
+
+    - name: Add userspace mode
+      lineinfile:
+        path: /etc/origin/node/node-config.yaml
+        insertafter: "  proxy-mode:"
+        line: "    - userspace"
+
+    - name: Restart the node service
+      systemd:
+        name: atomic-openshift-node
+        state: restarted

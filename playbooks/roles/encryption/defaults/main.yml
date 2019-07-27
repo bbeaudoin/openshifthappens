@@ -1,0 +1,5 @@
+---
+# Encryption keys for datastore encryption. The template is evaluated per
+# host, the defaults may be overridden by inventory or extra variables.
+key_secret: "{{ lookup('password', '/dev/null length=32') | b64encode }}"
+key_name: "{{ key_secret | to_uuid }}"
