@@ -52,6 +52,13 @@ yum install --quiet --assumeyes ipa-client
 ipa-client-install --mkhomedir --domain=openshifthappens.com --force-ntpd
 ```
 
+# Administration
+
+The server may be administered using the API, CLI, or Web UI. One benefit of using FreeIPA or Red Hat Identity Management is one does not need to set up the individual services manually. Registering hosts in DNS is relatively automatic provided a reverse zone is provided and signing certificates for hosts just requires a certificate signing request.
+
+![User Administration Example](https://raw.githubusercontent.com/bbeaudoin/openshifthappens/master/examples/redhatidm/01_ipa_users.png)
+![DNS Zone Example](https://raw.githubusercontent.com/bbeaudoin/openshifthappens/master/examples/redhatidm/02_ipa_domain.png)
+
 # Execution and output
 ```bash
 [root@management ~]# ipa-server-install --setup-dns --hostname=management.openshifthappens.com --domain=openshifthappens.com --realm=openshifthappens.com --mkhomedir
