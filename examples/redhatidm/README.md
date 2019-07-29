@@ -13,30 +13,23 @@ The same effect can be done with the `bind`, `openldap`, and `dogtag` projects a
 ## Server Package Installation
 
 ```bash
-yum install --quiet --assumeyes \
-    ipa-server \
-    ipa-server-dns
+yum install --quiet --assumeyes ipa-server ipa-server-dns
 ```
 
 ## Admin Package Installation
 ```bash
-yum install --quiet --assumeyes \
-    ipa-admintools
+yum install --quiet --assumeyes ipa-admintools
 ```
 
 ## Firewall Configuration
 ```bash
-firewall-cmd \
-    --permanent \
-    --add-service=freeipa-ldap
+firewall-cmd --permanent --add-service=freeipa-ldap
 firewall-cmd --reload
 ```
 
 ## Running the server installer
 ```bash
-ipa-server-install \
-    --setup-dns \
-    --mkhomedir \
+ipa-server-install --setup-dns --mkhomedir \
     --hostname=management.openshifthappens.com \
     --domain=openshifthappens.com \
     --realm=openshifthappens.com \
